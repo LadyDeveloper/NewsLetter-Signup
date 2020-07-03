@@ -4,6 +4,7 @@ const express = require("express")
 const bodyParser = require("body-parser");
 const request = require('request');
 const https = require('https');
+require('dotenv').config()
 
 const app = express();
 
@@ -35,11 +36,12 @@ app.post('/', (req, res) => {
     };
 
     //Turns the data into a format of string that is in the format of JSON -- this is the opposite of JSON.parse(data)
-    const jsonData = JSON.stringify(data);
+    const jsonData = JSON.stringify(data); //Sends the data structure to MailChimp
      //The url is the on https://mailchimp.com/developer/guides/get-started-with-mailchimp-api-3/ Request body parameters documentations (--url 'https://usX.api.mailchimp.com/3.0/lists' \ )
      // The list id is located in https://us10.admin.mailchimp.com/lists/settings
      // The usX in the url is the origin and is replaced by the number after the ( - ) in the API Key aedf6ba237610f958adc17e987344fa3-us10
-    const url = 'https://us10.api.mailchimp.com/3.0/lists/641260ae8c';
+    const list_id = process.env.LIST_ID;
+    const url = `https://us10.api.mailchimp.com/3.0/lists/${list_id}`;
     
     // The options varible is create to fullfil the https.request(url[, options][, callback]) parameters ( https://nodejs.org/api/http.html#http_http_request_options_callback )
     /* 
@@ -56,12 +58,12 @@ app.post('/', (req, res) => {
     };
 
     */
-    
+    const api_key = process.env.API_KEY;
     const options = {
         //method <string> A string specifying the HTTP request method. Default: 'GET'.
         method: "POST",
         //auth <string> Basic authentication i.e. 'user:password' to compute an Authorization header.
-        auth: "ladydeveloper:aedf6ba237610f958adc17e987344fa3-us10"
+        auth: `ladydeveloper:${api_key}`
     }
     //The https.request is saved into a variable (in this case called request) to be sent to mailchimp later
     const request = https.request( url, options, (response) => {
@@ -89,10 +91,3 @@ app.listen(process.env.PORT || 3000, () => {
     console.log('Server is running on port 3000');
     
 })
-
-//Mailchimp
-//API Key
-// aedf6ba237610f958adc17e987344fa3-us10
-
-//Audience/List ID
-// 641260ae8c
